@@ -32,6 +32,8 @@ class AttractionSearchAgent:
                     },
                 )
             except Exception:
+                # Provider failures should only drop this stage back to local
+                # fallback data instead of breaking the whole itinerary request.
                 continue
 
             for poi in extract_pois(raw):
@@ -52,6 +54,8 @@ class AttractionSearchAgent:
         if location is None:
             return None
 
+        # AMap categories are coarse and inconsistent, so duration and ticket
+        # are inferred conservatively from a few stable fields.
         category = poi.get("type") or poi.get("typecode") or poi.get("biz_type") or "景点"
         ticket_price = (
             parse_price(poi.get("ticket_ordering"))
@@ -85,6 +89,8 @@ class AttractionSearchAgent:
 
     @staticmethod
     def _fallback_attractions(request: TripPlanRequest) -> list[Attraction]:
+        # Fallback data is intentionally generic but geographically plausible,
+        # so the frontend can still exercise itinerary rendering end to end.
         return [
             Attraction(
                 name=f"{request.city} 城市地标",

@@ -19,3 +19,7 @@ export const loadTripPlan = (): TripPlan | null => {
     return null
   }
 }
+
+export const clearTripPlan = () => {
+  sessionStorage.removeItem(STORAGE_KEY)
+}

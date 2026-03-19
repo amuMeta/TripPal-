@@ -39,6 +39,8 @@ export const useTripPlanner = () => {
   }
 
   const startProgress = () => {
+    // The loading bar is intentionally simulated because itinerary generation
+    // may combine multiple slow backend stages without streaming progress.
     stopProgress()
     loadingProgress.value = 0
     loadingStatusText.value = statusMessages[0]
@@ -66,6 +68,8 @@ export const useTripPlanner = () => {
 
     try {
       const tripPlan = await generateTripPlan(payload)
+      // Persist the latest result so the result page can be a pure route
+      // transition instead of carrying a large object in router params.
       saveTripPlan(tripPlan)
       loadingProgress.value = 100
       loadingStatusText.value = '行程生成完成'

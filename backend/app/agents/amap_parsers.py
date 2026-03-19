@@ -7,6 +7,8 @@ from app.models.schemas import Location
 
 
 def unwrap_payload(raw: Any) -> Any:
+    # Some MCP wrappers nest useful data under one or more generic keys.
+    # Unwrap only known transport keys so domain payloads are left intact.
     current = raw
     for _ in range(3):
         if isinstance(current, dict) and len(current) == 1:
@@ -39,12 +41,11 @@ def extract_pois(raw: Any) -> list[dict[str, Any]]:
 def extract_forecasts(raw: Any) -> list[dict[str, Any]]:
     current = unwrap_payload(raw)
     if isinstance(current, dict):
-        forecasts = current.get("forecasts")
-        if isinstance(forecasts, list) and forecasts:
-            first = forecasts[0]
+        if isinstance(current.get("forecasts"), list) and current["forecasts"]:
+            first = current["forecasts"][0]
             if isinstance(first, dict) and isinstance(first.get("casts"), list):
                 return [item for item in first["casts"] if isinstance(item, dict)]
-            return [item for item in forecasts if isinstance(item, dict)]
+            return [item for item in current["forecasts"] if isinstance(item, dict)]
         if isinstance(current.get("lives"), list):
             return [item for item in current["lives"] if isinstance(item, dict)]
         if isinstance(current.get("data"), dict):

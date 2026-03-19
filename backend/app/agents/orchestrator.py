@@ -10,6 +10,8 @@ from app.models.schemas import TripPlan, TripPlanRequest
 
 class TripPlannerOrchestrator:
     def __init__(self) -> None:
+        # All provider-facing agents share the same MCP factory so tool setup
+        # happens once and each stage can still degrade independently.
         mcp_factory = get_mcp_factory()
         self.attraction_agent = AttractionSearchAgent(mcp_factory)
         self.weather_agent = WeatherQueryAgent(mcp_factory)
@@ -17,6 +19,8 @@ class TripPlannerOrchestrator:
         self.planner_agent = PlannerAgent()
 
     def plan_trip(self, request: TripPlanRequest) -> TripPlan:
+        # Keep the orchestration order explicit: gather source data first,
+        # then assemble the final itinerary in the planner stage.
         attractions = self.attraction_agent.search(request)
         weather_info = self.weather_agent.query(request)
         hotel = self.hotel_agent.recommend(request)

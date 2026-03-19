@@ -1,6 +1,6 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { loadTripPlan } from '../services/tripStorage'
+import { clearTripPlan, loadTripPlan } from '../services/tripStorage'
 import type { TripPlan } from '../types'
 
 export const useTripResult = () => {
@@ -34,11 +34,19 @@ export const useTripResult = () => {
     day.attractions = day.attractions.filter((_, index) => index !== attractionIndex)
   }
 
+  const backToPlanner = async () => {
+    // Clear stale itinerary data before returning so the home page always
+    // starts a fresh planning flow instead of depending on previous state.
+    clearTripPlan()
+    await router.push({ name: 'Home' })
+  }
+
   return {
     tripPlan,
     editMode,
     toggleEditMode,
     moveAttraction,
     deleteAttraction,
+    backToPlanner,
   }
 }

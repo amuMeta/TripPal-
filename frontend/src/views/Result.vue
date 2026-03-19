@@ -2,6 +2,7 @@
   <div v-if="tripPlan" class="result-page">
     <a-card class="shell" title="旅行计划结果">
       <div class="action-row">
+        <a-button @click="backToPlanner">返回重新输入</a-button>
         <a-button type="primary" @click="toggleEditMode">{{ editMode ? '退出编辑' : '编辑行程' }}</a-button>
         <a-button @click="downloadPng">导出 PNG</a-button>
         <a-button @click="downloadPdf">导出 PDF</a-button>
@@ -31,7 +32,7 @@ import WeatherTable from '../components/WeatherTable.vue'
 import { useExport } from '../composables/useExport'
 import { useTripResult } from '../composables/useTripResult'
 
-const { tripPlan, editMode, toggleEditMode, moveAttraction, deleteAttraction } = useTripResult()
+const { tripPlan, editMode, toggleEditMode, moveAttraction, deleteAttraction, backToPlanner } = useTripResult()
 const { exportAsPNG, exportAsPDF } = useExport()
 
 const exportBaseName = computed(() => {
